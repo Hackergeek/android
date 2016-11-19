@@ -19,10 +19,10 @@ import java.io.FileNotFoundException;
 /**
  *
  */
-public class MainActivity extends AppCompatActivity {
+public class MActivity extends AppCompatActivity {
     public static final int REQUEST_CODE_1 = 1;
     public static final int REQUEST_CODE_2 = 2;
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "MActivity";
     //文件路径
     private String mFilePath;
 
@@ -30,10 +30,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_m);
         iv = (ImageView) findViewById(R.id.iv);
-        //获取SD卡路径
+        //获取SD卡路径（外部存储路径）  /storage/emulated/0
         mFilePath = Environment.getExternalStorageDirectory().getPath();
+        Log.d(TAG, "onCreate: " + mFilePath);
+        //获取公共外部存储空间路径 /storage/emulated/0/Pictures
+//        File file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+//        Log.d(TAG, "onCreate: " + file.getAbsolutePath());
         mFilePath = mFilePath + "/temp.png";
     }
 
@@ -65,8 +69,17 @@ public class MainActivity extends AppCompatActivity {
      * @param view
      */
     public void customCamera(View view) {
-        Intent intent = new Intent(MainActivity.this, CustomCameraActivity.class);
+        Intent intent = new Intent(MActivity.this, CustomCameraActivity.class);
         startActivity(intent);
+    }
+
+    //将照片添加至系统相册
+    private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(mFilePath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        this.sendBroadcast(mediaScanIntent);
     }
 
     @Override
@@ -86,12 +99,15 @@ public class MainActivity extends AppCompatActivity {
                  * 1.修改系统默认保存照片路径
                  * 2.自定义照片文件保存路径，在调用系统相机之前，将路径作为参数传递给系统相机
                  * 3.创建文件输入流，读取照片文件并转换为Bitmap，显示在ImageView中
+                 *
+                 * 有可能会因为照片文件过大以致抛出内存溢出异常，不能够将照片显示在ImageView中
                  */
                 try {
                     FileInputStream fis = new FileInputStream(mFilePath);
                     Bitmap bitmap = BitmapFactory.decodeStream(fis);
                     Log.d(TAG, "onActivityResult: 读取图片");
                     iv.setImageBitmap(bitmap);
+                    galleryAddPic();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 } finally {
