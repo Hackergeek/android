@@ -7,4 +7,6 @@
 	关于Android兼容包Appcompat中一些控件的简单介绍
 <h3><a href="https://github.com/Hackergeek/android/tree/master/MyLog">4.Log的简单封装</a></h3>
 	关于如何对Log进行简单封装，从而做到控制Log日志的输出
+<h3><a href="https://github.com/Hackergeek/android/tree/master/gif_engine">5.Gif引擎</a></h3>
+	一个简单的Gif图片加载引擎
 
